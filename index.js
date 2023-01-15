@@ -1,74 +1,64 @@
-require("dotenv").config();
-const pdf = require("pdf-parse");
-const TelegramBot = require("node-telegram-bot-api");
-const { Configuration, OpenAIApi } = require("openai");
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAIKEY,
-});
-
-// replace the value below with the Telegram token you receive from @BotFather
-const token = process.env.TELEBOTKEY;
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
-
-// // Matches "/echo [whatever]"
-// bot.onText(/\/echo (.+)/, (msg, match) => {
-//   // 'msg' is the received Message from Telegram
-//   // 'match' is the result of executing the regexp above on the text content
-//   // of the message
-
-//   const chatId = msg.chat.id;
-//   const resp = match[1]; // the captured "whatever"
-
-//   // send back the matched "whatever" to the chat
-//   bot.sendMessage(chatId, resp);
-// });
-
-// Listen for any kind of message. There are different kinds of
-// messages.
-bot.on("message", (msg) => {
-  const chatId = msg.chat.id;
-
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, "Received your message");
-  bot.sendMessage(chatId, "test 1");
-  console.log(msg);
-});
-
-bot.on("document", async (msg) => {
-  bot.getFile(msg.document.file_id).then((file) => {
-    bot.downloadFile(file.file_id, "./files").then((response) => {
-      // read the pdf file here
-      pdf(response).then(async function (data) {
-        var prompt =
-          "As an industry expert,please give specific and personalised points for improvements in my resume by quoting examples in my resume" +
-          data.text;
-        console.log(prompt);
-        //delete the message
-        //bot.deleteMessage(msg.chat.id, msg.message_id);
-        // delete the file from your server if it's necessary
-        if (data) {
-          const openai = new OpenAIApi(configuration);
-          try {
-            const completion = await openai.createCompletion({
-              model: "text-davinci-003",
-              prompt: prompt,
-              max_tokens: 3000,
-              temperature: 0.6,
-            });
-            console.log(completion.data.choices[0].text);
-            bot.sendMessage(msg.chat.id, completion.data.choices[0].text);
-          } catch (error) {
-            if (error.response) {
-              console.log(error.response.status);
-              console.log(error.response.data);
-            } else {
-              console.log(error.message);
-            }
-          }
-        }
-      });
-    });
+const {
+  bot,
+  callAPIdoc,
+  askQuestion,
+  answerCallbacks,
+} = require("./supporting.js");
+/// THIS IS THE START MSG!
+bot.onText(/\/start/, (msg) => {
+  bot.sendMessage(msg.chat.id, "Welcome", {
+    reply_markup: {
+      keyboard: [["Improve Resume"], ["Fit Resume into Job"], ["Cover Letter"]],
+    },
   });
+});
+//TODO change above commands to / as the callback wont detect the changes
+//TODO more features?
+//TODO test result with false resume value(middle argument) for callAPIDoc
+//THIS IS WHERE YOU CHANGE/ADD MESSAGES
+bot.on("message", async function (msg) {
+  const text = msg.text;
+  const chatId = msg.chat.id;
+  if (text === "Improve Resume") {
+    //askQuestion will send the 2nd argument as a text to the user
+    // and will return the user's reply
+    var ans = await askQuestion(chatId, "Upload your resume!");
+    //every callAPIdoc will assume that it is being fed a document
+
+    //args are callAPIdoc(text before resume, add resume(set to false if not including data), msg)
+    await callAPIdoc(
+      "As an industry expert,please give specific and personalised points for improvements in my resume by quoting examples in my resume :",
+      true,
+      ans
+    );
+  }
+  if (text === "Fit Resume into Job") {
+    var jobd = await askQuestion(chatId, "Enter Job Description/Title");
+    var ans = await askQuestion(chatId, "Upload your resume!");
+    await callAPIdoc(
+      'for this job description:"'.concat(
+        jobd.text,
+        '",ChatGPT, as an industry expert, provide me personalised and specific points in order for me to match me resume to this job:'
+      ),
+      true,
+      ans
+    );
+  }
+  if (text === "Cover Letter") {
+    var jobd = await askQuestion(chatId, "Enter Job Description");
+    var ans = await askQuestion(chatId, "Upload your resume!");
+    await callAPIdoc(
+      'for this job description and company:"'.concat(
+        jobd.text,
+        '",draft me a cover letter using my resume:'
+      ),
+      true,
+      ans
+    );
+  }
+  const callback = answerCallbacks[msg.chat.id];
+  if (callback) {
+    delete answerCallbacks[msg.chat.id];
+    return callback(msg);
+  }
 });

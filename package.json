@@ -11,5 +11,6 @@
   "main": "index.js",
   "repository": "https://github.com/kingsmil/techfestival.git",
   "author": "kingsmil <23634290+kingsmil@users.noreply.github.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "commonjs"
 }
