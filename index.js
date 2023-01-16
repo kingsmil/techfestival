@@ -40,7 +40,7 @@ bot.onText(/\/start/, async (msg) => {
         keyboard: [
           ["I want to improve my resume!"],
           ["I want my resume to fit for a certain job!"],
-          ["Cover Letter"],
+          ["I need help with cover letter!"],
           ["Job Reccomendation"],
         ],
       },
