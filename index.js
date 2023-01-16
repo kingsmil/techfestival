@@ -25,7 +25,7 @@ bot.onText(/\/start/, (msg) => {
   else{
     var resume = askQuestion(chatId, "Welcome to Rizz-ume! Please upload your resume!");
     while(!StorePdfInDB(resume)){
-      
+      resume = askQuestion(chatId, "Please upload a proper resume!");
     }
   }
 });
