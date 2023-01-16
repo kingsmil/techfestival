@@ -4,28 +4,32 @@ const {
   askQuestion,
   answerCallbacks,
   admin,
+  storeRes,
+  getRes,
+  StorePdfInDB,
 } = require("./supporting.js");
 /// THIS IS THE START MSG!
-bot.onText(/\/start/, (msg) => {
-  var chatIdData = admin.database().get("chats/" + msg.chat.id);
-  if(chatIdData){
+bot.on("polling_error", console.log);
+bot.onText(/\/start/, async (msg) => {
+  var chatIdData = getRes(msg.chat.id);
+  console.log(chatIdData);
+  if (chatIdData != null) {
     bot.sendMessage(
       msg.chat.id,
       "Welcome back to Rizz-ume! Would you like to update your resume? :)",
       {
         reply_markup: {
-          keyboard: [
-            ["Yes!"],
-            ["It is fine the way it is!"]
-          ],
+          keyboard: [["Yes!"], ["It is fine the way it is!"]],
         },
       }
     );
-  }
-  else{
-    var resume = askQuestion(chatId, "Welcome to Rizz-ume! Please upload your resume!");
-    while(!StorePdfInDB(resume)){
-      
+  } else {
+    var resume = await askQuestion(
+      msg.chat.id,
+      "Welcome to Rizz-ume! Please upload your resume!"
+    );
+    if (!StorePdfInDB(resume)) {
+      bot.sendMessage(msg.chat.id, "Please try again.");
     }
   }
 });
@@ -33,21 +37,19 @@ bot.onText(/\/start/, (msg) => {
 //TODO more features?
 //TODO test result with false resume value(middle argument) for callAPIDoc
 //THIS IS WHERE YOU CHANGE/ADD MESSAGES
-bot.on("document", async function (msg) {
-  
-}
-)
 
 bot.on("message", async function (msg) {
   const text = msg.text;
   const chatId = msg.chat.id;
-  var ans = "";
-  if(text=="Yes!"){
+  var ans = msg;
+  if (text == "Yes!") {
     ans = await askQuestion(chatId, "Upload your resume!");
+    if (!StorePdfInDB(ans)) {
+      bot.sendMessage(msg.chat.id, "Please try again.");
+    }
   }
-  if(text=="It is fine the way it is!"){
-    const chatRef = admin.database().ref("chats/" + msg.chat.id);
-    ans = conschatRef.set({ pdf: data.text });
+  if (text == "It is fine the way it is!") {
+    //put your new keyboard here
   }
   if (text === "I want to improve my resume!") {
     //askQuestion will send the 2nd argument as a text to the user
