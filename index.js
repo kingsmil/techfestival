@@ -6,11 +6,27 @@ const {
 } = require("./supporting.js");
 /// THIS IS THE START MSG!
 bot.onText(/\/start/, (msg) => {
+<<<<<<< HEAD
   bot.sendMessage(msg.chat.id, "Welcome", {
     reply_markup: {
       keyboard: [["Improve Resume"], ["Fit Resume into Job"], ["Cover Letter"],["Job Reccomendation"]],
     },
   });
+=======
+  bot.sendMessage(
+    msg.chat.id,
+    "Welcome to Rizz-ume! Up your resume game in no time! How can we help you? :)",
+    {
+      reply_markup: {
+        keyboard: [
+          ["I want to improve my resume!"],
+          ["I want my resume to fit for a certain job!"],
+          ["I need help with cover letter!"],
+        ],
+      },
+    }
+  );
+>>>>>>> 59f5aeb12d54f570ac5add4038a72e16d6b25b5e
 });
 //TODO change above commands to / as the callback wont detect the changes
 //TODO more features?
@@ -19,19 +35,15 @@ bot.onText(/\/start/, (msg) => {
 bot.on("message", async function (msg) {
   const text = msg.text;
   const chatId = msg.chat.id;
-  if (text === "Improve Resume") {
+  if (text === "I want to improve my resume!") {
     //askQuestion will send the 2nd argument as a text to the user
     // and will return the user's reply
     var ans = await askQuestion(chatId, "Upload your resume!");
     //every callAPIdoc will assume that it is being fed a document
     //args are callAPIdoc(text before resume, add resume(set to false if not including data), msg)
-    await callAPIdoc(
-      "As an industry expert,please give specific and personalised points for improvements in my resume by quoting examples in my resume :",
-      true,
-      ans
-    );
+    await callAPIdoc("please wait", true, ans);
   }
-  if (text === "Fit Resume into Job") {
+  if (text === "I want my resume to fit for a certain job!") {
     var jobd = await askQuestion(chatId, "Enter Job Description/Title");
     var ans = await askQuestion(chatId, "Upload your resume!");
     await callAPIdoc(
@@ -43,7 +55,7 @@ bot.on("message", async function (msg) {
       ans
     );
   }
-  if (text === "Cover Letter") {
+  if (text === "I need help with cover letter!") {
     var jobd = await askQuestion(chatId, "Enter Job Description");
     var ans = await askQuestion(chatId, "Upload your resume!");
     await callAPIdoc(
