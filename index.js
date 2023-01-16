@@ -26,10 +26,24 @@ bot.onText(/\/start/, async (msg) => {
   }
   else{
     var resume = askQuestion(chatId, "Welcome to Rizz-ume! Please upload your resume!");
-    while(!StorePdfInDB(resume)){
-      
+    while (!StorePdfInDB(resume)) {
+      bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
     }
   }
+  bot.sendMessage(
+    msg.chat.id,
+    "Welcome to Rizz-ume! Up your resume game in no time! How can we help you today? :)",
+    {
+      reply_markup: {
+        keyboard: [
+          ["I want to improve my resume!"],
+          ["I want my resume to fit for a certain job!"],
+          ["Cover Letter"],
+          ["Job Reccomendation"],
+        ],
+      },
+    }
+  );
 });
 //TODO change above commands to / as the callback wont detect the changes
 //TODO more features?
@@ -42,12 +56,13 @@ bot.on("message", async function (msg) {
   var ans = msg;
   if (text == "Yes!") {
     ans = await askQuestion(chatId, "Upload your resume!");
-    if (!StorePdfInDB(ans)) {
-      bot.sendMessage(msg.chat.id, "Please try again.");
+    while (!StorePdfInDB(ans)) {
+      bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
     }
   }
   if (text == "It is fine the way it is!") {
     //put your new keyboard here
+    ans= getRes(chatId);
   }
   if (text === "I want to improve my resume!") {
     //askQuestion will send the 2nd argument as a text to the user
