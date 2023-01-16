@@ -8,7 +8,7 @@ const {
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, "Welcome", {
     reply_markup: {
-      keyboard: [["Improve Resume"], ["Fit Resume into Job"], ["Cover Letter"]],
+      keyboard: [["Improve Resume"], ["Fit Resume into Job"], ["Cover Letter"],["Job Reccomendation"]],
     },
   });
 });
@@ -24,7 +24,6 @@ bot.on("message", async function (msg) {
     // and will return the user's reply
     var ans = await askQuestion(chatId, "Upload your resume!");
     //every callAPIdoc will assume that it is being fed a document
-
     //args are callAPIdoc(text before resume, add resume(set to false if not including data), msg)
     await callAPIdoc(
       "As an industry expert,please give specific and personalised points for improvements in my resume by quoting examples in my resume :",
@@ -38,7 +37,7 @@ bot.on("message", async function (msg) {
     await callAPIdoc(
       'for this job description:"'.concat(
         jobd.text,
-        '",ChatGPT, as an industry expert, provide me personalised and specific points in order for me to match me resume to this job:'
+        '",ChatGPT, as an industry expert, provide me personalised and specific points in order for me to match my resume to this job:'
       ),
       true,
       ans
@@ -52,6 +51,14 @@ bot.on("message", async function (msg) {
         jobd.text,
         '",draft me a cover letter using my resume:'
       ),
+      true,
+      ans
+    );
+  }
+  if(text=="Job Reccomendation"){
+    var ans = await askQuestion(chatId, "Upload your resume!");
+    await callAPIdoc(
+      'What job roles in tech roles should i be looking for as an internship using my resume: ',
       true,
       ans
     );

@@ -33,6 +33,7 @@ const callAPIdoc = async (input, resume, msg) => {
         if (data) {
           const openai = new OpenAIApi(configuration);
           try {
+            if(resume){
             const check = await openai.createCompletion({
               model: "text-davinci-003",
               prompt: prompt_check,
@@ -50,6 +51,17 @@ const callAPIdoc = async (input, resume, msg) => {
               bot.sendMessage(msg.chat.id, completion.data.choices[0].text);
             } else {
               bot.sendMessage(msg.chat.id, "Please upload a valid resume");
+            }
+            }
+            else{
+              const completion = await openai.createCompletion({
+                model: "text-davinci-003",
+                prompt: prompt,
+                max_tokens: 3000,
+                temperature: 0.6,
+              });
+              console.log(completion.data.choices[0].text);
+              bot.sendMessage(msg.chat.id, completion.data.choices[0].text);
             }
           } catch (error) {
             if (error.response) {
