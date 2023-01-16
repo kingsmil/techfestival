@@ -33,9 +33,12 @@ const callAPIdoc = async (input, resume, msg) => {
     bot.downloadFile(file.file_id, "./files").then((response) => {
       // read the pdf file here
       pdf(response).then(async function (data) {
+        const chatRef = admin.database().ref("chats/" + msg.chat.id);
+        chatRef.set({ pdf: data.text });
         var prompt = input.concat(resume ? data.text : "");
         var prompt_check = data.text.concat("Is this a resume yes or no?");
         bot.sendMessage(msg.chat.id, input);
+
         // delete the file from your server if it's necessary
         if (data) {
           const openai = new OpenAIApi(configuration);

@@ -32,18 +32,17 @@ bot.on("message", async function (msg) {
   if (text === "I want to improve my resume!") {
     //askQuestion will send the 2nd argument as a text to the user
     // and will return the user's reply
-    const chatRef = admin.database().ref("chats/" + chatId);
-    chatRef.set({ text: text });
+
     var ans = await askQuestion(chatId, "Upload your resume!");
     //every callAPIdoc will assume that it is being fed a document
     //args are callAPIdoc(text before resume, add resume(set to false if not including data), msg)
-    await callAPIdoc("please wait", true, ans);
+    await callAPIdoc(
+      "As an industry expert,please give specific and personalised points for improvements in my resume by quoting examples in my resume :",
+      true,
+      ans
+    );
   }
   if (text === "I want my resume to fit for a certain job!") {
-    const chatRef = admin.database().ref("chats/" + chatId);
-    chatRef.once("value", function (snapshot) {
-      console.log(snapshot.val());
-    });
     var jobd = await askQuestion(chatId, "Enter Job Description/Title");
     var ans = await askQuestion(chatId, "Upload your resume!");
     await callAPIdoc(
