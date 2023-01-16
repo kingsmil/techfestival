@@ -21,11 +21,12 @@ bot.onText(/\/start/, async (msg) => {
       {
         reply_markup: {
           keyboard: [
-            ["Yes!"],
+            ["Yes, update my resume!"],
             ["I want to improve my resume!"],
             ["I want my resume to fit for a certain job!"],
             ["I need help with cover letter!"],
             ["Job recommendation"],
+            ["Help me with something else!"],
           ],
         },
       }
@@ -86,7 +87,7 @@ bot.on("message", async function (msg) {
   const text = msg.text;
   const chatId = msg.chat.id;
   var ans = msg;
-  if (text == "Yes!") {
+  if (text == "Yes, update my resume!") {
     ans = await askQuestion(chatId, "Upload your resume!");
     while (!StorePdfInDB(ans)) {
       bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
@@ -135,6 +136,15 @@ bot.on("message", async function (msg) {
       true,
       ans
     );
+  }
+  if (text == "Help me with something else!") {
+    const custom = await askQuestion(chatId, "What do you need help with?");
+    const resumein = await askQuestion(
+      chatId,
+      "Type 'Add resume' to add resume to your question at the end."
+    );
+
+    await callAPIdoc(custom.text, resumein == "Add resume" ? true : false, ans);
   }
   const callback = answerCallbacks[msg.chat.id];
   if (callback) {
