@@ -6,27 +6,11 @@ const {
 } = require("./supporting.js");
 /// THIS IS THE START MSG!
 bot.onText(/\/start/, (msg) => {
-<<<<<<< HEAD
-  bot.sendMessage(msg.chat.id, "Welcome", {
+  bot.sendMessage(msg.chat.id, "Welcome to Rizz-ume! Up your resume game in no time! How can we help you? :)", {
     reply_markup: {
       keyboard: [["Improve Resume"], ["Fit Resume into Job"], ["Cover Letter"],["Job Reccomendation"]],
     },
   });
-=======
-  bot.sendMessage(
-    msg.chat.id,
-    "Welcome to Rizz-ume! Up your resume game in no time! How can we help you? :)",
-    {
-      reply_markup: {
-        keyboard: [
-          ["I want to improve my resume!"],
-          ["I want my resume to fit for a certain job!"],
-          ["I need help with cover letter!"],
-        ],
-      },
-    }
-  );
->>>>>>> 59f5aeb12d54f570ac5add4038a72e16d6b25b5e
 });
 //TODO change above commands to / as the callback wont detect the changes
 //TODO more features?
