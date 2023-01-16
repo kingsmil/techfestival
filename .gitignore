@@ -1,2 +1,4 @@
 ##envs
 .env
+node/modules
+privatekey.json

@@ -1,7 +1,14 @@
 require("dotenv").config();
+const admin = require("firebase-admin");
+var serviceAccount = require("./privatekey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL:
+    "https://rizzume-1d369-default-rtdb.asia-southeast1.firebasedatabase.app",
+});
 const pdf = require("pdf-parse");
 const TelegramBot = require("node-telegram-bot-api");
-
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
   apiKey: process.env.OPENAIKEY,
@@ -33,27 +40,26 @@ const callAPIdoc = async (input, resume, msg) => {
         if (data) {
           const openai = new OpenAIApi(configuration);
           try {
-            if(resume){
-            const check = await openai.createCompletion({
-              model: "text-davinci-003",
-              prompt: prompt_check,
-              max_tokens: 3000,
-              temperature: 0.6,
-            });
-            if (check.data.choices[0].text.includes("Yes")) {
-              const completion = await openai.createCompletion({
+            if (resume) {
+              const check = await openai.createCompletion({
                 model: "text-davinci-003",
-                prompt: prompt,
+                prompt: prompt_check,
                 max_tokens: 3000,
                 temperature: 0.6,
               });
-              console.log(completion.data.choices[0].text);
-              bot.sendMessage(msg.chat.id, completion.data.choices[0].text);
+              if (check.data.choices[0].text.includes("Yes")) {
+                const completion = await openai.createCompletion({
+                  model: "text-davinci-003",
+                  prompt: prompt,
+                  max_tokens: 3000,
+                  temperature: 0.6,
+                });
+                console.log(completion.data.choices[0].text);
+                bot.sendMessage(msg.chat.id, completion.data.choices[0].text);
+              } else {
+                bot.sendMessage(msg.chat.id, "Please upload a valid resume");
+              }
             } else {
-              bot.sendMessage(msg.chat.id, "Please upload a valid resume");
-            }
-            }
-            else{
               const completion = await openai.createCompletion({
                 model: "text-davinci-003",
                 prompt: prompt,
@@ -93,4 +99,5 @@ module.exports = {
   callAPIdoc,
   answerCallbacks,
   askQuestion,
+  admin,
 };

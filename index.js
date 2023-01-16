@@ -3,14 +3,24 @@ const {
   callAPIdoc,
   askQuestion,
   answerCallbacks,
+  admin,
 } = require("./supporting.js");
 /// THIS IS THE START MSG!
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "Welcome to Rizz-ume! Up your resume game in no time! How can we help you? :)", {
-    reply_markup: {
-      keyboard: [["Improve Resume"], ["Fit Resume into Job"], ["Cover Letter"],["Job Reccomendation"]],
-    },
-  });
+  bot.sendMessage(
+    msg.chat.id,
+    "Welcome to Rizz-ume! Up your resume game in no time! How can we help you? :)",
+    {
+      reply_markup: {
+        keyboard: [
+          ["I want to improve my resume!"],
+          ["I want my resume to fit for a certain job!"],
+          ["Cover Letter"],
+          ["Job Reccomendation"],
+        ],
+      },
+    }
+  );
 });
 //TODO change above commands to / as the callback wont detect the changes
 //TODO more features?
@@ -22,12 +32,18 @@ bot.on("message", async function (msg) {
   if (text === "I want to improve my resume!") {
     //askQuestion will send the 2nd argument as a text to the user
     // and will return the user's reply
+    const chatRef = admin.database().ref("chats/" + chatId);
+    chatRef.set({ text: text });
     var ans = await askQuestion(chatId, "Upload your resume!");
     //every callAPIdoc will assume that it is being fed a document
     //args are callAPIdoc(text before resume, add resume(set to false if not including data), msg)
     await callAPIdoc("please wait", true, ans);
   }
   if (text === "I want my resume to fit for a certain job!") {
+    const chatRef = admin.database().ref("chats/" + chatId);
+    chatRef.once("value", function (snapshot) {
+      console.log(snapshot.val());
+    });
     var jobd = await askQuestion(chatId, "Enter Job Description/Title");
     var ans = await askQuestion(chatId, "Upload your resume!");
     await callAPIdoc(
@@ -51,10 +67,10 @@ bot.on("message", async function (msg) {
       ans
     );
   }
-  if(text=="Job Reccomendation"){
+  if (text == "Job Reccomendation") {
     var ans = await askQuestion(chatId, "Upload your resume!");
     await callAPIdoc(
-      'What job roles in tech roles should i be looking for as an internship using my resume: ',
+      "What job roles in tech roles should i be looking for as an internship using my resume: ",
       true,
       ans
     );
