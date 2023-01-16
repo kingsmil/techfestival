@@ -25,7 +25,7 @@ bot.onText(/\/start/, async (msg) => {
             ["I want to improve my resume!"],
             ["I want my resume to fit for a certain job!"],
             ["I need help with cover letter!"],
-            ["Job Reccomendation"],
+            ["Job recommendation"],
           ],
         },
       }
@@ -129,7 +129,7 @@ bot.on("message", async function (msg) {
       ans
     );
   }
-  if (text == "Job Reccomendation") {
+  if (text == "Job recommendation") {
     await callAPIdoc(
       "What job roles in tech roles should i be looking for as an internship using my resume: ",
       true,
