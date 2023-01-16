@@ -9,6 +9,7 @@ const {
   StorePdfInDB,
 } = require("./supporting.js");
 /// THIS IS THE START MSG!
+
 bot.on("polling_error", console.log);
 bot.onText(/\/start/, async (msg) => {
   var chatIdData = await getRes(msg.chat.id);
@@ -19,34 +20,63 @@ bot.onText(/\/start/, async (msg) => {
       "Welcome back to Rizz-ume! Would you like to update your resume? :)",
       {
         reply_markup: {
-          keyboard: [["Yes!"], ["It is fine the way it is!"]],
+          keyboard: [
+            ["Yes!"],
+            ["I want to improve my resume!"],
+            ["I want my resume to fit for a certain job!"],
+            ["I need help with cover letter!"],
+            ["Job Reccomendation"],
+          ],
         },
       }
     );
   } else {
-    var resume = askQuestion(
+    var resume = await askQuestion(
       msg.chat.id,
       "Welcome to Rizz-ume! Please upload your resume!"
     );
-    while (!StorePdfInDB(resume)) {
-      bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
+    if (!StorePdfInDB(resume)) {
+      bot.sendMessage(msg.chat.id, "Please try again.");
     }
   }
-  bot.sendMessage(
-    msg.chat.id,
-    "Welcome to Rizz-ume! Up your resume game in no time! How can we help you today? :)",
-    {
-      reply_markup: {
-        keyboard: [
-          ["I want to improve my resume!"],
-          ["I want my resume to fit for a certain job!"],
-          ["I need help with cover letter!"],
-          ["Job Reccomendation"],
-        ],
-      },
-    }
-  );
 });
+// bot.onText(/\/start/, async (msg) => {
+//   var chatIdData = await getRes(msg.chat.id);
+//   console.log(chatIdData);
+//   if (chatIdData != null) {
+//     bot.sendMessage(
+//       msg.chat.id,
+//       "Welcome back to Rizz-ume! Would you like to update your resume? :)",
+//       {
+//         reply_markup: {
+//           keyboard: [["Yes!"], ["It is fine the way it is!"]],
+//         },
+//       }
+//     );
+//   } else {
+//     var resume = askQuestion(
+//       msg.chat.id,
+//       "Welcome to Rizz-ume! Please upload your resume!"
+//     );
+//     while (!StorePdfInDB(resume)) {
+//       bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
+//     }
+//   }
+//   bot.sendMessage(
+//     msg.chat.id,
+//     "Welcome to Rizz-ume! Up your resume game in no time! How can we help you today? :)",
+//     {
+//       reply_markup: {
+//         keyboard: [
+//           ["I want to improve my resume!"],
+//           ["I want my resume to fit for a certain job!"],
+//           ["I need help with cover letter!"],
+//           ["Job Reccomendation"],
+//         ],
+//       },
+//     }
+//   );
+// });
 //TODO change above commands to / as the callback wont detect the changes
 //TODO more features?
 //TODO test result with false resume value(middle argument) for callAPIDoc

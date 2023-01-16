@@ -122,7 +122,7 @@ const StorePdfInDB = async (msg) => {
 };
 var getRes = async (chatId) => {
   const chatRef = admin.database().ref("chats/" + chatId);
-  await chatRef.once(
+  const val = await chatRef.once(
     "value",
     (snapshot) => {
       var resume = snapshot.val()?.pdf;
@@ -133,6 +133,7 @@ var getRes = async (chatId) => {
       return null;
     }
   );
+  return val.val();
 };
 const storeRes = async (chatId, storetext) => {
   const chatRef = admin.database().ref("chats/" + chatId);
