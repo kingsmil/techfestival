@@ -11,7 +11,7 @@ const {
 /// THIS IS THE START MSG!
 bot.on("polling_error", console.log);
 bot.onText(/\/start/, async (msg) => {
-  var chatIdData = getRes(msg.chat.id);
+  var chatIdData = await getRes(msg.chat.id);
   console.log(chatIdData);
   if (chatIdData != null) {
     bot.sendMessage(
@@ -23,9 +23,11 @@ bot.onText(/\/start/, async (msg) => {
         },
       }
     );
-  }
-  else{
-    var resume = askQuestion(chatId, "Welcome to Rizz-ume! Please upload your resume!");
+  } else {
+    var resume = askQuestion(
+      msg.chat.id,
+      "Welcome to Rizz-ume! Please upload your resume!"
+    );
     while (!StorePdfInDB(resume)) {
       bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
     }
@@ -62,7 +64,7 @@ bot.on("message", async function (msg) {
   }
   if (text == "It is fine the way it is!") {
     //put your new keyboard here
-    ans= getRes(chatId);
+    ans = getRes(chatId);
   }
   if (text === "I want to improve my resume!") {
     //askQuestion will send the 2nd argument as a text to the user

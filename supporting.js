@@ -42,7 +42,7 @@ const callAPIdoc = async (input, resume, msg) => {
   await chatRef.once(
     "value",
     (snapshot) => {
-      resText = snapshot.val().pdf;
+      resText = snapshot.val()?.pdf;
     },
     (errorObject) => {
       console.log("not found");
@@ -125,7 +125,7 @@ var getRes = async (chatId) => {
   await chatRef.once(
     "value",
     (snapshot) => {
-      var resume = snapshot.val().pdf;
+      var resume = snapshot.val()?.pdf;
       return resume;
     },
     (errorObject) => {
