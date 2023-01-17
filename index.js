@@ -41,47 +41,6 @@ bot.onText(/\/start/, async (msg) => {
     }
   }
 });
-// bot.onText(/\/start/, async (msg) => {
-//   var chatIdData = await getRes(msg.chat.id);
-//   console.log(chatIdData);
-//   if (chatIdData != null) {
-//     bot.sendMessage(
-//       msg.chat.id,
-//       "Welcome back to Rizz-ume! Would you like to update your resume? :)",
-//       {
-//         reply_markup: {
-//           keyboard: [["Yes!"], ["It is fine the way it is!"]],
-//         },
-//       }
-//     );
-//   } else {
-//     var resume = askQuestion(
-//       msg.chat.id,
-//       "Welcome to Rizz-ume! Please upload your resume!"
-//     );
-//     while (!StorePdfInDB(resume)) {
-//       bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
-//     }
-//   }
-//   bot.sendMessage(
-//     msg.chat.id,
-//     "Welcome to Rizz-ume! Up your resume game in no time! How can we help you today? :)",
-//     {
-//       reply_markup: {
-//         keyboard: [
-//           ["I want to improve my resume!"],
-//           ["I want my resume to fit for a certain job!"],
-//           ["I need help with cover letter!"],
-//           ["Job Reccomendation"],
-//         ],
-//       },
-//     }
-//   );
-// });
-//TODO change above commands to / as the callback wont detect the changes
-//TODO more features?
-//TODO test result with false resume value(middle argument) for callAPIDoc
-//THIS IS WHERE YOU CHANGE/ADD MESSAGES
 
 bot.on("message", async function (msg) {
   const text = msg.text;
@@ -103,7 +62,7 @@ bot.on("message", async function (msg) {
     //every callAPIdoc will assume that it is being fed a document
     //args are callAPIdoc(text before resume, add resume(set to false if not including data), msg)
     await callAPIdoc(
-      "As an industry expert,please give specific and personalised points for improvements in my resume by quoting examples in my resume :",
+      "As an industry expert,please give specific and personalised points for improvements in my resume and avoid generic advice unless necessary by quoting examples in my resume following: ",
       true,
       ans
     );

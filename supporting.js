@@ -107,7 +107,18 @@ const StorePdfInDB = async (msg) => {
           });
           if (check.data.choices[0].text.includes("Yes")) {
             storeRes(msg.chat.id, data.text);
-            bot.sendMessage(msg.chat.id, "Upload sucessful!");
+            bot.sendMessage(msg.chat.id, "Upload sucessful!", {
+              reply_markup: {
+                keyboard: [
+                  ["Yes, update my resume!"],
+                  ["I want to improve my resume!"],
+                  ["I want my resume to fit for a certain job!"],
+                  ["I need help with cover letter!"],
+                  ["Job recommendation"],
+                  ["Help me with something else!"],
+                ],
+              },
+            });
             return true;
           } else {
             console.log(data.text);
