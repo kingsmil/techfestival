@@ -107,7 +107,18 @@ const StorePdfInDB = async (msg) => {
           });
           if (check.data.choices[0].text.includes("Yes")) {
             storeRes(msg.chat.id, data.text);
-            bot.sendMessage(msg.chat.id, "Upload sucessful!");
+            bot.sendMessage(msg.chat.id, "Upload sucessful!", {
+              reply_markup: {
+                keyboard: [
+                  ["Yes, update my resume!"],
+                  ["I want to improve my resume!"],
+                  ["I want my resume to fit for a certain job!"],
+                  ["I need help with cover letter!"],
+                  ["Job recommendation"],
+                  ["Help me with something else!"],
+                ],
+              },
+            });
             return true;
           } else {
             console.log(data.text);
@@ -122,7 +133,7 @@ const StorePdfInDB = async (msg) => {
 };
 var getRes = async (chatId) => {
   const chatRef = admin.database().ref("chats/" + chatId);
-  await chatRef.once(
+  const val = await chatRef.once(
     "value",
     (snapshot) => {
       var resume = snapshot.val()?.pdf;
@@ -133,6 +144,7 @@ var getRes = async (chatId) => {
       return null;
     }
   );
+  return val.val();
 };
 const storeRes = async (chatId, storetext) => {
   const chatRef = admin.database().ref("chats/" + chatId);

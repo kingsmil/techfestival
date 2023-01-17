@@ -9,6 +9,7 @@ const {
   StorePdfInDB,
 } = require("./supporting.js");
 /// THIS IS THE START MSG!
+
 bot.on("polling_error", console.log);
 bot.onText(/\/start/, async (msg) => {
   var chatIdData = await getRes(msg.chat.id);
@@ -19,44 +20,33 @@ bot.onText(/\/start/, async (msg) => {
       "Welcome back to Rizz-ume! Would you like to update your resume? :)",
       {
         reply_markup: {
-          keyboard: [["Yes!"], ["It is fine the way it is!"]],
+          keyboard: [
+            ["Yes, update my resume!"],
+            ["I want to improve my resume!"],
+            ["I want my resume to fit for a certain job!"],
+            ["I need help with cover letter!"],
+            ["Job recommendation"],
+            ["Help me with something else!"],
+          ],
         },
       }
     );
   } else {
-    var resume = askQuestion(
+    var resume = await askQuestion(
       msg.chat.id,
       "Welcome to Rizz-ume! Please upload your resume!"
     );
-    while (!StorePdfInDB(resume)) {
-      bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
+    if (!StorePdfInDB(resume)) {
+      bot.sendMessage(msg.chat.id, "Please try again.");
     }
   }
-  bot.sendMessage(
-    msg.chat.id,
-    "Welcome to Rizz-ume! Up your resume game in no time! How can we help you today? :)",
-    {
-      reply_markup: {
-        keyboard: [
-          ["I want to improve my resume!"],
-          ["I want my resume to fit for a certain job!"],
-          ["I need help with cover letter!"],
-          ["Job Reccomendation"],
-        ],
-      },
-    }
-  );
 });
-//TODO change above commands to / as the callback wont detect the changes
-//TODO more features?
-//TODO test result with false resume value(middle argument) for callAPIDoc
-//THIS IS WHERE YOU CHANGE/ADD MESSAGES
 
 bot.on("message", async function (msg) {
   const text = msg.text;
   const chatId = msg.chat.id;
   var ans = msg;
-  if (text == "Yes!") {
+  if (text == "Yes, update my resume!") {
     ans = await askQuestion(chatId, "Upload your resume!");
     while (!StorePdfInDB(ans)) {
       bot.sendMessage(msg.chat.id, "Please send in a proper resume.");
@@ -72,7 +62,7 @@ bot.on("message", async function (msg) {
     //every callAPIdoc will assume that it is being fed a document
     //args are callAPIdoc(text before resume, add resume(set to false if not including data), msg)
     await callAPIdoc(
-      "As an industry expert,please give specific and personalised points for improvements in my resume by quoting examples in my resume :",
+      "As an industry expert,please give specific and personalised points for improvements in my resume and avoid generic advice unless necessary by quoting examples in my resume following: ",
       true,
       ans
     );
@@ -99,12 +89,21 @@ bot.on("message", async function (msg) {
       ans
     );
   }
-  if (text == "Job Reccomendation") {
+  if (text == "Job recommendation") {
     await callAPIdoc(
       "What job roles in tech roles should i be looking for as an internship using my resume: ",
       true,
       ans
     );
+  }
+  if (text == "Help me with something else!") {
+    const custom = await askQuestion(chatId, "What do you need help with?");
+    const resumein = await askQuestion(
+      chatId,
+      "Type 'Add resume' to add resume to your question at the end."
+    );
+
+    await callAPIdoc(custom.text, resumein == "Add resume" ? true : false, ans);
   }
   const callback = answerCallbacks[msg.chat.id];
   if (callback) {
